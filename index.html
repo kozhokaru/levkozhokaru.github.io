@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Blog</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="logo">MyBlog</a>
+                <div class="nav-links">
+                    <a href="/">Blog</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#research">Research</a>
+                    <a href="#about">About</a>
+                    <a href="#contact" class="nav-cta">Get in Touch</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Welcome to My Blog</h1>
+                    <p class="hero-subtitle">Exploring technology, design, and the art of building great software through thoughtful writing and practical insights.</p>
+                </div>
+            </section>
+
+            <section class="posts-section">
+                <h2 class="section-title">Recent Posts</h2>
+                
+                <div class="posts-grid">
+                    <article class="post-card">
+                        <div class="post-hero">
+                            <div class="post-hero-icon">🔒</div>
+                        </div>
+                        <div class="post-card-content">
+                            <span class="post-category">Announcements</span>
+                            <h3 class="post-card-title">
+                                <a href="posts/automating-code-reviews.html">Automate security reviews with AI</a>
+                            </h3>
+                            <p class="post-card-excerpt">
+                                Explore how AI-powered tools are revolutionizing the code review process, making it faster and more thorough while maintaining high standards.
+                            </p>
+                            <div class="post-card-meta">
+                                <span>Jan 20, 2025</span>
+                                <span>•</span>
+                                <span>8 min read</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="post-card">
+                        <div class="post-hero blue">
+                            <div class="post-hero-icon">⚡</div>
+                        </div>
+                        <div class="post-card-content">
+                            <span class="post-category">Engineering</span>
+                            <h3 class="post-card-title">
+                                <a href="posts/building-resilient-systems.html">Building Resilient Systems</a>
+                            </h3>
+                            <p class="post-card-excerpt">
+                                Real-world insights on creating systems that gracefully handle failures, scale efficiently, and maintain reliability.
+                            </p>
+                            <div class="post-card-meta">
+                                <span>Jan 15, 2025</span>
+                                <span>•</span>
+                                <span>10 min read</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="post-card">
+                        <div class="post-hero green">
+                            <div class="post-hero-icon">🎨</div>
+                        </div>
+                        <div class="post-card-content">
+                            <span class="post-category">Design</span>
+                            <h3 class="post-card-title">
+                                <a href="posts/minimalist-design-principles.html">The Art of Minimalist Design</a>
+                            </h3>
+                            <p class="post-card-excerpt">
+                                How embracing minimalism in design can lead to better user experiences, cleaner interfaces, and more maintainable codebases.
+                            </p>
+                            <div class="post-card-meta">
+                                <span>Jan 10, 2025</span>
+                                <span>•</span>
+                                <span>6 min read</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="post-card">
+                        <div class="post-hero purple">
+                            <div class="post-hero-icon">🚀</div>
+                        </div>
+                        <div class="post-card-content">
+                            <span class="post-category">Performance</span>
+                            <h3 class="post-card-title">
+                                <a href="posts/optimizing-web-performance.html">Web Performance Optimization</a>
+                            </h3>
+                            <p class="post-card-excerpt">
+                                Practical techniques for improving website speed, reducing load times, and creating smooth user experiences.
+                            </p>
+                            <div class="post-card-meta">
+                                <span>Jan 5, 2025</span>
+                                <span>•</span>
+                                <span>12 min read</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="newsletter-section">
+                <h3 class="newsletter-title">Stay Updated</h3>
+                <p class="newsletter-description">Get weekly insights on technology and development delivered to your inbox.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email" class="email-input" required>
+                    <button type="submit" class="subscribe-btn">Subscribe</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                    <a href="https://github.com" target="_blank">GitHub</a>
+                    <a href="https://twitter.com" target="_blank">Twitter</a>
+                    <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+                </div>
+                <p class="footer-copyright">© 2025 Personal Blog. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

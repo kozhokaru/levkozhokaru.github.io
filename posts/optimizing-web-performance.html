@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Performance Optimization | Personal Blog</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="../index.html" class="logo">MyBlog</a>
+                <div class="nav-links">
+                    <a href="../index.html">Blog</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#research">Research</a>
+                    <a href="#about">About</a>
+                    <a href="#contact" class="nav-cta">Get in Touch</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            
+            <article class="blog-post">
+                <div class="post-hero-section purple">
+                    <div class="post-hero-illustration">🚀</div>
+                </div>
+                
+                <div class="post-article">
+                    <header class="post-header">
+                        <div class="post-meta-top">
+                            <span class="post-category-badge">Performance</span>
+                        </div>
+                        <h1 class="post-full-title">Web Performance Optimization</h1>
+                        <div class="post-meta-bottom">
+                            <span>Jan 5, 2025</span>
+                            <span class="separator">•</span>
+                            <span>12 min read</span>
+                        </div>
+                    </header>
+
+                    <div class="post-content">
+                        <p>Speed isn't just a feature—it's the foundation of good user experience. Research shows that a 1-second delay in page load time can result in a 7% reduction in conversions. In this deep dive, we'll explore practical techniques for making your web applications blazingly fast.</p>
+
+                        <h2>Understanding Web Performance</h2>
+                        
+                        <p>Before optimizing, we need to understand what we're measuring. The key metrics that matter for user experience are:</p>
+
+                        <ul>
+                            <li><strong>First Contentful Paint (FCP):</strong> When the first content appears</li>
+                            <li><strong>Largest Contentful Paint (LCP):</strong> When the main content loads</li>
+                            <li><strong>First Input Delay (FID):</strong> Time until the page is interactive</li>
+                            <li><strong>Cumulative Layout Shift (CLS):</strong> Visual stability of the page</li>
+                            <li><strong>Time to Interactive (TTI):</strong> When the page is fully interactive</li>
+                        </ul>
+
+                        <p>These Core Web Vitals directly correlate with user satisfaction and are now ranking factors for search engines.</p>
+
+                        <h2>The Critical Rendering Path</h2>
+
+                        <p>Understanding how browsers render pages is crucial for optimization. The critical rendering path involves:</p>
+
+                        <ol>
+                            <li>Parsing HTML to construct the DOM</li>
+                            <li>Parsing CSS to construct the CSSOM</li>
+                            <li>Combining DOM and CSSOM to create the render tree</li>
+                            <li>Layout (reflow) to calculate positions</li>
+                            <li>Paint to fill in pixels</li>
+                            <li>Composite to draw layers</li>
+                        </ol>
+
+                        <p>Each step is an opportunity for optimization.</p>
+
+                        <h2>Optimizing Asset Delivery</h2>
+
+                        <h3>JavaScript Optimization</h3>
+
+                        <p>JavaScript is often the biggest performance bottleneck. Here's how to optimize it:</p>
+
+                        <pre><code>// Code Splitting with Dynamic Imports
+// Instead of loading everything upfront
+import HeavyComponent from './HeavyComponent';
+
+// Load on demand
+const HeavyComponent = lazy(() => 
+    import('./HeavyComponent')
+);
+
+// Use Suspense for loading states
+function App() {
+    return (
+        &lt;Suspense fallback={&lt;Loading /&gt;}&gt;
+            &lt;HeavyComponent /&gt;
+        &lt;/Suspense&gt;
+    );
+}</code></pre>
+
+                        <p>Bundle optimization techniques:</p>
+
+                        <pre><code>// webpack.config.js
+module.exports = {
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    priority: 10
+                },
+                common: {
+                    minChunks: 2,
+                    priority: 5,
+                    reuseExistingChunk: true
+                }
+            }
+        }
+    }
+};</code></pre>
+
+                        <h3>CSS Optimization</h3>
+
+                        <p>CSS blocks rendering, so optimization is critical:</p>
+
+                        <pre><code>/* Critical CSS - Inline this */
+.above-fold {
+    /* Styles for content visible on load */
+}
+
+/* Non-critical CSS - Load async */
+&lt;link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"&gt;
+&lt;noscript&gt;&lt;link rel="stylesheet" href="styles.css"&gt;&lt;/noscript&gt;</code></pre>
+
+                        <p>Remove unused CSS with PurgeCSS:</p>
+
+                        <pre><code>// postcss.config.js
+module.exports = {
+    plugins: [
+        require('@fullhuman/postcss-purgecss')({
+            content: ['./src/**/*.{js,jsx,ts,tsx}'],
+            defaultExtractor: content => 
+                content.match(/[\w-/:]+(?<!:)/g) || []
+        })
+    ]
+};</code></pre>
+
+                        <h3>Image Optimization</h3>
+
+                        <p>Images often account for most of a page's weight. Modern formats and loading strategies can dramatically reduce this:</p>
+
+                        <pre><code>&lt;!-- Responsive images with modern formats --&gt;
+&lt;picture&gt;
+    &lt;source 
+        type="image/avif" 
+        srcset="image.avif 1x, image@2x.avif 2x"&gt;
+    &lt;source 
+        type="image/webp" 
+        srcset="image.webp 1x, image@2x.webp 2x"&gt;
+    &lt;img 
+        src="image.jpg" 
+        srcset="image.jpg 1x, image@2x.jpg 2x"
+        alt="Description"
+        loading="lazy"
+        decoding="async"&gt;
+&lt;/picture&gt;</code></pre>
+
+                        <h2>Network Optimization</h2>
+
+                        <h3>HTTP/2 and HTTP/3</h3>
+
+                        <p>Modern protocols offer significant performance improvements:</p>
+
+                        <ul>
+                            <li>Multiplexing: Multiple requests over single connection</li>
+                            <li>Server push: Proactively send resources</li>
+                            <li>Header compression: Reduces overhead</li>
+                            <li>Binary protocol: More efficient parsing</li>
+                        </ul>
+
+                        <h3>Resource Hints</h3>
+
+                        <p>Help browsers fetch resources more efficiently:</p>
+
+                        <pre><code>&lt;!-- DNS Prefetch for external domains --&gt;
+&lt;link rel="dns-prefetch" href="//api.example.com"&gt;
+
+&lt;!-- Preconnect for critical third-party origins --&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+
+&lt;!-- Preload critical resources --&gt;
+&lt;link rel="preload" href="/fonts/main.woff2" as="font" type="font/woff2" crossorigin&gt;
+
+&lt;!-- Prefetch resources for future navigation --&gt;
+&lt;link rel="prefetch" href="/next-page.js"&gt;</code></pre>
+
+                        <h3>Caching Strategies</h3>
+
+                        <p>Effective caching can eliminate network requests entirely:</p>
+
+                        <pre><code>// Service Worker caching strategy
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => {
+                // Cache hit - return response
+                if (response) {
+                    return response;
+                }
+
+                // Clone the request
+                const fetchRequest = event.request.clone();
+
+                return fetch(fetchRequest).then(response => {
+                    // Check valid response
+                    if (!response || response.status !== 200) {
+                        return response;
+                    }
+
+                    // Clone the response
+                    const responseToCache = response.clone();
+
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            cache.put(event.request, responseToCache);
+                        });
+
+                    return response;
+                });
+            })
+    );
+});</code></pre>
+
+                        <h2>Runtime Performance</h2>
+
+                        <h3>Virtual DOM and Reconciliation</h3>
+
+                        <p>Optimize React rendering performance:</p>
+
+                        <pre><code>// Memoization to prevent unnecessary renders
+const ExpensiveComponent = React.memo(({ data }) => {
+    return &lt;ComplexVisualization data={data} /&gt;;
+}, (prevProps, nextProps) => {
+    // Custom comparison
+    return prevProps.data.id === nextProps.data.id;
+});
+
+// useMemo for expensive computations
+function DataProcessor({ items }) {
+    const processedData = useMemo(() => {
+        return items.map(item => 
+            expensiveTransformation(item)
+        );
+    }, [items]);
+
+    return &lt;DisplayComponent data={processedData} /&gt;;
+}</code></pre>
+
+                        <h3>Web Workers for Heavy Computing</h3>
+
+                        <p>Offload intensive operations to prevent blocking the main thread:</p>
+
+                        <pre><code>// main.js
+const worker = new Worker('processor.worker.js');
+
+worker.postMessage({ 
+    command: 'process', 
+    data: largeDataset 
+});
+
+worker.onmessage = (e) => {
+    const { result } = e.data;
+    updateUI(result);
+};
+
+// processor.worker.js
+self.onmessage = (e) => {
+    const { command, data } = e.data;
+    
+    if (command === 'process') {
+        const result = intensiveOperation(data);
+        self.postMessage({ result });
+    }
+};</code></pre>
+
+                        <h3>Intersection Observer for Lazy Loading</h3>
+
+                        <p>Efficiently handle visibility-based loading:</p>
+
+                        <pre><code>const imageObserver = new IntersectionObserver(
+    (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.add('loaded');
+                observer.unobserve(img);
+            }
+        });
+    },
+    {
+        rootMargin: '50px 0px',
+        threshold: 0.01
+    }
+);
+
+// Observe all lazy images
+document.querySelectorAll('img[data-src]')
+    .forEach(img => imageObserver.observe(img));</code></pre>
+
+                        <h2>Database and API Optimization</h2>
+
+                        <h3>Query Optimization</h3>
+
+                        <p>Efficient data fetching is crucial for performance:</p>
+
+                        <pre><code>// GraphQL - Request only needed fields
+const OPTIMIZED_QUERY = gql`
+    query GetUser($id: ID!) {
+        user(id: $id) {
+            id
+            name
+            avatar
+            # Don't fetch unless needed
+            # posts { ... }
+            # comments { ... }
+        }
+    }
+`;
+
+// REST - Use field filtering
+fetch('/api/users/123?fields=id,name,avatar')
+
+// Pagination for large datasets
+fetch('/api/posts?page=1&limit=20&sort=-createdAt')</code></pre>
+
+                        <h3>Database Indexing</h3>
+
+                        <pre><code>-- Create indexes for frequently queried columns
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_posts_user_created ON posts(user_id, created_at DESC);
+
+-- Composite index for complex queries
+CREATE INDEX idx_orders_status_date 
+ON orders(status, order_date) 
+WHERE status IN ('pending', 'processing');</code></pre>
+
+                        <h2>Measuring and Monitoring</h2>
+
+                        <h3>Real User Monitoring (RUM)</h3>
+
+                        <p>Track actual user experience:</p>
+
+                        <pre><code>// Performance Observer API
+const observer = new PerformanceObserver((list) => {
+    for (const entry of list.getEntries()) {
+        // Send metrics to analytics
+        analytics.track('performance', {
+            name: entry.name,
+            duration: entry.duration,
+            startTime: entry.startTime,
+            type: entry.entryType
+        });
+    }
+});
+
+observer.observe({ 
+    entryTypes: ['navigation', 'resource', 'paint', 'largest-contentful-paint'] 
+});</code></pre>
+
+                        <h3>Synthetic Monitoring</h3>
+
+                        <p>Automated testing for performance regression:</p>
+
+                        <pre><code>// Lighthouse CI configuration
+module.exports = {
+    ci: {
+        collect: {
+            url: ['http://localhost:3000'],
+            numberOfRuns: 3,
+        },
+        assert: {
+            assertions: {
+                'categories:performance': ['error', { minScore: 0.9 }],
+                'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
+                'interactive': ['error', { maxNumericValue: 3500 }],
+            },
+        },
+        upload: {
+            target: 'temporary-public-storage',
+        },
+    },
+};</code></pre>
+
+                        <h2>Advanced Techniques</h2>
+
+                        <h3>Edge Computing</h3>
+
+                        <p>Move computation closer to users with edge functions:</p>
+
+                        <pre><code>// Cloudflare Worker example
+addEventListener('fetch', event => {
+    event.respondWith(handleRequest(event.request));
+});
+
+async function handleRequest(request) {
+    // Cache API responses at edge
+    const cache = caches.default;
+    let response = await cache.match(request);
+
+    if (!response) {
+        response = await fetch(request);
+        // Cache for 1 hour
+        response = new Response(response.body, response);
+        response.headers.append('Cache-Control', 's-maxage=3600');
+        event.waitUntil(cache.put(request, response.clone()));
+    }
+
+    return response;
+}</code></pre>
+
+                        <h3>Progressive Enhancement</h3>
+
+                        <p>Build experiences that work for everyone but excel for modern browsers:</p>
+
+                        <pre><code>// Feature detection and progressive enhancement
+if ('loading' in HTMLImageElement.prototype) {
+    // Native lazy loading
+    images.forEach(img => img.loading = 'lazy');
+} else {
+    // Fallback to Intersection Observer
+    lazyLoadWithIntersectionObserver();
+}
+
+if ('connection' in navigator) {
+    // Adapt based on network speed
+    if (navigator.connection.effectiveType === '4g') {
+        loadHighQualityImages();
+    } else {
+        loadOptimizedImages();
+    }
+}</code></pre>
+
+                        <h2>Performance Budget</h2>
+
+                        <p>Establish and enforce performance budgets:</p>
+
+                        <pre><code>// webpack.config.js
+module.exports = {
+    performance: {
+        maxEntrypointSize: 250000,
+        maxAssetSize: 100000,
+        hints: 'error',
+        assetFilter: function(assetFilename) {
+            return assetFilename.endsWith('.js');
+        }
+    }
+};</code></pre>
+
+                        <h2>Conclusion</h2>
+
+                        <p>Web performance optimization is not a one-time task but an ongoing process. Every millisecond counts, and the cumulative effect of these optimizations can transform user experience.</p>
+
+                        <p>Start with measurement—you can't optimize what you don't measure. Focus on the metrics that matter most to your users. Implement changes incrementally and monitor their impact.</p>
+
+                        <p>Remember: the fastest request is the one that's never made, the best code is the code that never runs, and the most performant feature is the one that doesn't exist. Sometimes, the best optimization is simplification.</p>
+
+                        <p>Performance is a feature that enables all other features. Invest in it accordingly.</p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                    <a href="https://github.com" target="_blank">GitHub</a>
+                    <a href="https://twitter.com" target="_blank">Twitter</a>
+                    <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+                </div>
+                <p class="footer-copyright">© 2025 Personal Blog. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

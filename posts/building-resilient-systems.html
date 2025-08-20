@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Resilient Systems | Personal Blog</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="../index.html" class="logo">MyBlog</a>
+                <div class="nav-links">
+                    <a href="../index.html">Blog</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#research">Research</a>
+                    <a href="#about">About</a>
+                    <a href="#contact" class="nav-cta">Get in Touch</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            
+            <article class="blog-post">
+                <div class="post-hero-section blue">
+                    <div class="post-hero-illustration">⚡</div>
+                </div>
+                
+                <div class="post-article">
+                    <header class="post-header">
+                        <div class="post-meta-top">
+                            <span class="post-category-badge">Engineering</span>
+                        </div>
+                        <h1 class="post-full-title">Building Resilient Systems</h1>
+                        <div class="post-meta-bottom">
+                            <span>Jan 15, 2025</span>
+                            <span class="separator">•</span>
+                            <span>10 min read</span>
+                        </div>
+                    </header>
+
+                    <div class="post-content">
+                        <p>After years of building and maintaining production systems, I've learned that resilience isn't just about preventing failures—it's about designing systems that gracefully handle the inevitable when things go wrong.</p>
+
+                        <h2>Understanding System Resilience</h2>
+                        
+                        <p>Resilience in software systems means more than just high availability. It encompasses the ability to:</p>
+
+                        <ul>
+                            <li>Recover quickly from failures</li>
+                            <li>Maintain core functionality under stress</li>
+                            <li>Adapt to changing conditions</li>
+                            <li>Learn from incidents to prevent future issues</li>
+                        </ul>
+
+                        <p>The key insight is that failures are not exceptional events—they're a normal part of operating distributed systems at scale.</p>
+
+                        <h2>The Fallacy of Perfect Systems</h2>
+
+                        <p>Early in my career, I believed that with enough testing and careful design, we could build systems that never failed. Reality quickly taught me otherwise.</p>
+
+                        <blockquote>
+                            "Everything fails all the time. Build accordingly." - Werner Vogels, CTO of Amazon
+                        </blockquote>
+
+                        <p>This mindset shift is crucial. Instead of trying to prevent all failures, we should focus on minimizing their impact and recovering quickly.</p>
+
+                        <h2>Core Principles of Resilient Design</h2>
+
+                        <h3>1. Embrace Failure as Normal</h3>
+
+                        <p>Design your systems with the assumption that any component can fail at any time. This means:</p>
+
+                        <pre><code>// Instead of this:
+async function fetchUserData(userId) {
+    return await database.query(`SELECT * FROM users WHERE id = ${userId}`);
+}
+
+// Do this:
+async function fetchUserData(userId) {
+    try {
+        const result = await database.query(
+            'SELECT * FROM users WHERE id = ?', 
+            [userId]
+        );
+        return result;
+    } catch (error) {
+        logger.error('Database query failed', { userId, error });
+        
+        // Try cache as fallback
+        const cached = await cache.get(`user:${userId}`);
+        if (cached) {
+            return cached;
+        }
+        
+        // Return degraded response
+        return { id: userId, status: 'limited' };
+    }
+}</code></pre>
+
+                        <h3>2. Build in Redundancy</h3>
+
+                        <p>Critical components should have backups. This applies to everything from databases to API endpoints:</p>
+
+                        <ul>
+                            <li>Multiple database replicas across availability zones</li>
+                            <li>Redundant cache layers</li>
+                            <li>Multiple instances of each service</li>
+                            <li>Fallback data sources</li>
+                        </ul>
+
+                        <h3>3. Implement Circuit Breakers</h3>
+
+                        <p>Circuit breakers prevent cascading failures by stopping requests to failing services:</p>
+
+                        <pre><code>class CircuitBreaker {
+    constructor(threshold = 5, timeout = 60000) {
+        this.failureCount = 0;
+        this.threshold = threshold;
+        this.timeout = timeout;
+        this.state = 'CLOSED';
+        this.nextAttempt = Date.now();
+    }
+
+    async call(fn) {
+        if (this.state === 'OPEN') {
+            if (Date.now() < this.nextAttempt) {
+                throw new Error('Circuit breaker is OPEN');
+            }
+            this.state = 'HALF_OPEN';
+        }
+
+        try {
+            const result = await fn();
+            this.onSuccess();
+            return result;
+        } catch (error) {
+            this.onFailure();
+            throw error;
+        }
+    }
+
+    onSuccess() {
+        this.failureCount = 0;
+        this.state = 'CLOSED';
+    }
+
+    onFailure() {
+        this.failureCount++;
+        if (this.failureCount >= this.threshold) {
+            this.state = 'OPEN';
+            this.nextAttempt = Date.now() + this.timeout;
+        }
+    }
+}</code></pre>
+
+                        <h2>Real-World Patterns for Resilience</h2>
+
+                        <h3>Graceful Degradation</h3>
+
+                        <p>When systems are under stress, it's better to provide limited functionality than to fail completely. For example, an e-commerce site might:</p>
+
+                        <ul>
+                            <li>Show cached product information if the database is slow</li>
+                            <li>Disable recommendations to reduce load</li>
+                            <li>Queue orders for later processing if payment systems are down</li>
+                        </ul>
+
+                        <h3>Bulkheads and Isolation</h3>
+
+                        <p>Isolate different parts of your system so that failures don't spread. Think of it like compartments in a ship—if one floods, the others remain intact.</p>
+
+                        <p>In practice, this means:</p>
+                        <ul>
+                            <li>Separate thread pools for different types of requests</li>
+                            <li>Isolated database connections for critical vs. non-critical queries</li>
+                            <li>Independent deployment units for different features</li>
+                        </ul>
+
+                        <h3>Rate Limiting and Backpressure</h3>
+
+                        <p>Protect your services from being overwhelmed:</p>
+
+                        <pre><code>const rateLimiter = new Map();
+
+function checkRateLimit(clientId, limit = 100) {
+    const now = Date.now();
+    const minute = Math.floor(now / 60000);
+    
+    const key = `${clientId}:${minute}`;
+    const count = rateLimiter.get(key) || 0;
+    
+    if (count >= limit) {
+        return false;
+    }
+    
+    rateLimiter.set(key, count + 1);
+    return true;
+}</code></pre>
+
+                        <h2>Monitoring and Observability</h2>
+
+                        <p>You can't fix what you can't see. Comprehensive monitoring is essential for resilient systems:</p>
+
+                        <h3>Key Metrics to Track</h3>
+                        <ul>
+                            <li><strong>Golden Signals:</strong> Latency, traffic, errors, and saturation</li>
+                            <li><strong>Business Metrics:</strong> User actions, conversion rates, revenue impact</li>
+                            <li><strong>System Health:</strong> CPU, memory, disk I/O, network throughput</li>
+                        </ul>
+
+                        <h3>Distributed Tracing</h3>
+                        <p>In microservices architectures, distributed tracing helps you understand request flows and identify bottlenecks:</p>
+
+                        <pre><code>// Using OpenTelemetry for tracing
+const tracer = opentelemetry.trace.getTracer('my-service');
+
+async function processOrder(orderId) {
+    const span = tracer.startSpan('process-order');
+    span.setAttribute('order.id', orderId);
+    
+    try {
+        await validateOrder(orderId);
+        await chargePayment(orderId);
+        await fulfillOrder(orderId);
+        
+        span.setStatus({ code: SpanStatusCode.OK });
+    } catch (error) {
+        span.recordException(error);
+        span.setStatus({ code: SpanStatusCode.ERROR });
+        throw error;
+    } finally {
+        span.end();
+    }
+}</code></pre>
+
+                        <h2>Testing for Resilience</h2>
+
+                        <h3>Chaos Engineering</h3>
+                        <p>Intentionally introduce failures to test your system's resilience. Start small and gradually increase the scope:</p>
+
+                        <ul>
+                            <li>Kill random processes</li>
+                            <li>Introduce network latency</li>
+                            <li>Fill up disk space</li>
+                            <li>Corrupt data in transit</li>
+                        </ul>
+
+                        <h3>Load Testing</h3>
+                        <p>Regular load testing helps you understand your system's limits and behavior under stress. Don't just test happy paths—simulate realistic failure scenarios.</p>
+
+                        <h2>Incident Response and Learning</h2>
+
+                        <p>When incidents occur (and they will), having a solid response process is crucial:</p>
+
+                        <ol>
+                            <li><strong>Detect:</strong> Automated alerting based on key metrics</li>
+                            <li><strong>Respond:</strong> Clear escalation paths and runbooks</li>
+                            <li><strong>Recover:</strong> Focus on restoring service first</li>
+                            <li><strong>Learn:</strong> Blameless post-mortems to improve</li>
+                        </ol>
+
+                        <h3>The Power of Post-Mortems</h3>
+                        <p>Every incident is a learning opportunity. Effective post-mortems focus on:</p>
+
+                        <ul>
+                            <li>Understanding the timeline of events</li>
+                            <li>Identifying root causes (often multiple)</li>
+                            <li>Documenting what went well</li>
+                            <li>Creating actionable improvements</li>
+                        </ul>
+
+                        <h2>Cultural Aspects of Resilience</h2>
+
+                        <p>Building resilient systems isn't just about technology—it's about culture:</p>
+
+                        <h3>Blameless Culture</h3>
+                        <p>Focus on improving systems, not punishing individuals. People make mistakes; systems should be designed to handle them.</p>
+
+                        <h3>Shared Ownership</h3>
+                        <p>Everyone should understand how the system works and feel responsible for its reliability. This means:</p>
+                        <ul>
+                            <li>Developers participate in on-call rotations</li>
+                            <li>Operations teams contribute to design decisions</li>
+                            <li>Product managers understand technical constraints</li>
+                        </ul>
+
+                        <h2>Conclusion</h2>
+
+                        <p>Building resilient systems is an ongoing journey, not a destination. It requires continuous investment in both technology and culture. The goal isn't to eliminate all failures but to ensure that when they occur, their impact is minimal and recovery is swift.</p>
+
+                        <p>Remember: every system will fail eventually. The question is not if, but when—and more importantly, how your system will respond when it does.</p>
+
+                        <p>Start small, measure everything, learn from failures, and gradually build up your system's resilience. Your future self (and your on-call team) will thank you.</p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                    <a href="https://github.com" target="_blank">GitHub</a>
+                    <a href="https://twitter.com" target="_blank">Twitter</a>
+                    <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+                </div>
+                <p class="footer-copyright">© 2025 Personal Blog. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>
