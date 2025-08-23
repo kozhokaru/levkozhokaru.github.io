@@ -137,6 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const carouselContainer = document.querySelector('.carousel-container');
     let isCarouselHovered = false;
     let isCarouselScrolling = false;
+    let scrollAccumulator = 0;
+    let scrollTimeout = null;
     
     // Track carousel hover state
     carouselContainer.addEventListener('mouseenter', () => {
@@ -147,38 +149,65 @@ document.addEventListener('DOMContentLoaded', () => {
     carouselContainer.addEventListener('mouseleave', () => {
         isCarouselHovered = false;
         carouselContainer.classList.remove('scrolling');
+        scrollAccumulator = 0;
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = null;
+        }
     });
     
-    // Handle wheel events on carousel
+    // Handle wheel events on carousel with better throttling
     carouselContainer.addEventListener('wheel', (e) => {
         if (isCarouselHovered) {
             e.preventDefault();
             e.stopPropagation();
             
+            // Only process scroll if not in cooldown
             if (!isCarouselScrolling) {
-                isCarouselScrolling = true;
-                
-                // Check if horizontal scroll (shift key or horizontal delta)
+                // Accumulate scroll delta
                 const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey;
+                const delta = isHorizontal ? e.deltaX : e.deltaY;
+                scrollAccumulator += delta;
                 
-                if (isHorizontal || Math.abs(e.deltaX) > 0) {
-                    // Horizontal scroll - navigate carousel
-                    if (e.deltaX > 0 || (e.shiftKey && e.deltaY > 0)) {
-                        currentIndex = (currentIndex + 1) % totalCards;
-                    } else if (e.deltaX < 0 || (e.shiftKey && e.deltaY < 0)) {
-                        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+                // Clear existing timeout
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+                
+                // Set threshold for triggering navigation (prevents hair-trigger scrolling)
+                const scrollThreshold = 80; // Requires more intentional scrolling
+                
+                if (Math.abs(scrollAccumulator) >= scrollThreshold) {
+                    // Clear any pending reset timeout
+                    if (scrollTimeout) {
+                        clearTimeout(scrollTimeout);
+                        scrollTimeout = null;
                     }
-                } else {
-                    // Vertical scroll - also navigate carousel when hovering
-                    if (e.deltaY > 0) {
+                    
+                    // Navigate based on accumulated scroll
+                    if (scrollAccumulator > 0) {
                         currentIndex = (currentIndex + 1) % totalCards;
                     } else {
                         currentIndex = (currentIndex - 1 + totalCards) % totalCards;
                     }
+                    
+                    goToSlide(currentIndex);
+                    
+                    // Reset accumulator and set cooldown
+                    scrollAccumulator = 0;
+                    isCarouselScrolling = true;
+                    
+                    // Cooldown period to prevent rapid navigation
+                    setTimeout(() => { 
+                        isCarouselScrolling = false;
+                        scrollAccumulator = 0; // Extra safety reset
+                    }, 700);
+                } else {
+                    // Reset accumulator after a pause in scrolling
+                    scrollTimeout = setTimeout(() => {
+                        scrollAccumulator = 0;
+                    }, 150);
                 }
-                
-                goToSlide(currentIndex);
-                setTimeout(() => { isCarouselScrolling = false; }, 300);
             }
         }
     }, { passive: false });
