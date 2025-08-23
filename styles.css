@@ -14,7 +14,7 @@
     --color-border: #E5E5E5;
     --color-border-light: #F0F0F0;
     
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --font-sans: Times, serif;
     --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
     
     --container-width: 1280px;
@@ -42,6 +42,9 @@ body {
     color: var(--color-text-primary);
     line-height: 1.6;
     font-size: 18px;
+    font-feature-settings: "case", "lnum", "pnum", "ss01";
+    letter-spacing: -0.01em;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -159,6 +162,7 @@ body {
     line-height: 1.1;
     letter-spacing: -0.03em;
     margin-bottom: var(--spacing-lg);
+    font-feature-settings: "case", "lnum", "pnum", "ss01";
 }
 
 .hero-subtitle {
@@ -179,6 +183,7 @@ body {
     font-weight: 600;
     margin-bottom: var(--spacing-2xl);
     letter-spacing: -0.02em;
+    font-feature-settings: "case", "lnum", "pnum", "ss01";
 }
 
 .posts-grid {
@@ -344,6 +349,7 @@ body {
     line-height: 1.2;
     letter-spacing: -0.03em;
     margin-bottom: var(--spacing-lg);
+    font-feature-settings: "case", "lnum", "pnum", "ss01";
 }
 
 .post-meta-bottom {
@@ -366,10 +372,15 @@ body {
 
 /* Article Content Styles */
 .post-content {
-    max-width: 680px;
+    max-width: 640px;
     margin: 0 auto;
-    font-size: 1.125rem;
-    line-height: 1.8;
+    font-size: 20px;
+    line-height: 31px;
+    letter-spacing: -0.1px;
+    font-weight: 400;
+    font-feature-settings: "case", "lnum", "pnum", "ss01";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
     color: var(--color-text-secondary);
 }
 
@@ -379,6 +390,7 @@ body {
     margin: var(--spacing-3xl) 0 var(--spacing-lg) 0;
     color: var(--color-text-primary);
     letter-spacing: -0.02em;
+    font-feature-settings: "case", "lnum", "pnum", "ss01";
 }
 
 .post-content h3 {
@@ -387,10 +399,12 @@ body {
     margin: var(--spacing-2xl) 0 var(--spacing-md) 0;
     color: var(--color-text-primary);
     letter-spacing: -0.01em;
+    font-feature-settings: "case", "lnum", "pnum", "ss01";
 }
 
 .post-content p {
-    margin-bottom: var(--spacing-lg);
+    margin-top: 0;
+    margin-bottom: 16px;
 }
 
 .post-content ul,

@@ -1,0 +1,31 @@
+# Minimal Jekyll config - Linus mode
+title: Lev Kozhokaru
+description: Blog
+url: https://levkozhokaru.github.io
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+permalink: /:year/:month/:day/:title/
+
+# Collections
+collections:
+  posts:
+    output: true
+    permalink: /blog/:year/:month/:day/:title/
+
+# Exclude from build
+exclude:
+  - admin.html
+  - admin.css
+  - admin.js
+  - CLAUDE.md
+  - README.md
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"

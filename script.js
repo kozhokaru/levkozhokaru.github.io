@@ -1,182 +1,193 @@
-// Newsletter form handling
-document.addEventListener('DOMContentLoaded', function() {
-    const newsletterForm = document.querySelector('.newsletter-form');
+// Smooth scroll
+function scrollToContent() {
+    document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Navbar reveal on scroll
+const navbar = document.getElementById('navbar');
+const hero = document.getElementById('hero');
+
+const observer = new IntersectionObserver(
+    ([entry]) => {
+        if (!entry.isIntersecting) {
+            navbar.classList.add('visible');
+            navbar.classList.remove('hidden');
+        } else {
+            navbar.classList.add('hidden');
+            navbar.classList.remove('visible');
+        }
+    },
+    { threshold: 0.1 }
+);
+
+observer.observe(hero);
+
+// Dark mode
+const theme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', theme);
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+    const iconWrapper = document.querySelector('.icon-wrapper');
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
     
-    if (newsletterForm) {
-        newsletterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const emailInput = this.querySelector('.email-input');
-            const email = emailInput.value;
-            
-            // Simple email validation
-            if (validateEmail(email)) {
-                // In a real application, you would send this to your backend
-                showNotification('Thank you for subscribing! Check your email for confirmation.');
-                emailInput.value = '';
-            } else {
-                showNotification('Please enter a valid email address.', 'error');
-            }
-        });
-    }
+    // Add animation class
+    iconWrapper.classList.add('animating');
     
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
+    // Change theme
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
     
-    // Add reading progress bar for blog posts
-    if (document.querySelector('.blog-post')) {
-        createReadingProgress();
-    }
-    
-    // Lazy loading for images
-    if ('IntersectionObserver' in window) {
-        const images = document.querySelectorAll('img[data-src]');
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-        
-        images.forEach(img => imageObserver.observe(img));
-    }
-    
-    // Add copy button to code blocks
-    document.querySelectorAll('pre code').forEach(block => {
-        const button = document.createElement('button');
-        button.className = 'copy-code-btn';
-        button.textContent = 'Copy';
-        button.addEventListener('click', () => {
-            navigator.clipboard.writeText(block.textContent);
-            button.textContent = 'Copied!';
-            setTimeout(() => {
-                button.textContent = 'Copy';
-            }, 2000);
-        });
-        
-        const pre = block.parentElement;
-        pre.style.position = 'relative';
-        pre.appendChild(button);
-    });
+    // Remove animation class after animation completes
+    setTimeout(() => {
+        iconWrapper.classList.remove('animating');
+    }, 400);
 });
 
-function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-}
-
-function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
+// Carousel functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const track = document.querySelector('.carousel-track');
+    const cards = document.querySelectorAll('.carousel-card');
+    const prevBtn = document.querySelector('.carousel-btn.prev');
+    const nextBtn = document.querySelector('.carousel-btn.next');
+    const dotsContainer = document.querySelector('.carousel-dots');
     
-    // Add styles
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        z-index: 1000;
-        animation: slideIn 0.3s ease-out;
-    `;
+    if (!track || !cards.length) return; // Exit if no carousel
     
-    document.body.appendChild(notification);
+    let currentIndex = 0;
+    const totalCards = cards.length;
     
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
-
-function createReadingProgress() {
-    const progressBar = document.createElement('div');
-    progressBar.className = 'reading-progress';
-    progressBar.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0%;
-        height: 3px;
-        background: linear-gradient(90deg, #0066cc, #87ceeb);
-        z-index: 1000;
-        transition: width 0.2s ease;
-    `;
-    
-    document.body.appendChild(progressBar);
-    
-    window.addEventListener('scroll', () => {
-        const windowHeight = window.innerHeight;
-        const documentHeight = document.documentElement.scrollHeight;
-        const scrollTop = window.scrollY;
-        const scrollPercent = (scrollTop / (documentHeight - windowHeight)) * 100;
-        progressBar.style.width = `${scrollPercent}%`;
+    // Create dots
+    cards.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('carousel-dot');
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
     });
-}
-
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
+    
+    const dots = document.querySelectorAll('.carousel-dot');
+    
+    // Update card classes based on position
+    function updateCardClasses() {
+        cards.forEach((card, index) => {
+            card.classList.remove('active', 'prev', 'next', 'far');
+            
+            if (index === currentIndex) {
+                card.classList.add('active');
+            } else if (index === (currentIndex - 1 + totalCards) % totalCards) {
+                card.classList.add('prev');
+            } else if (index === (currentIndex + 1) % totalCards) {
+                card.classList.add('next');
+            } else {
+                card.classList.add('far');
+            }
+        });
+        
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+    }
+    
+    // Go to specific slide
+    function goToSlide(index) {
+        currentIndex = index;
+        updateCardClasses();
+        
+        // Use requestAnimationFrame to ensure layout is complete
+        requestAnimationFrame(() => {
+            const targetCard = cards[index];
+            
+            // Get the card's current position
+            const cardRect = targetCard.getBoundingClientRect();
+            
+            // Calculate the center points
+            const cardCenter = cardRect.left + (cardRect.width / 2);
+            const viewportCenter = window.innerWidth / 2;
+            
+            // Calculate how much to move to center the card
+            const offset = viewportCenter - cardCenter;
+            
+            // Get current transform or default to 0
+            const currentTransform = parseFloat(
+                track.style.transform.replace('translateX(', '').replace('px)', '') || '0'
+            );
+            
+            // Apply the new transform
+            const newTransform = currentTransform + offset;
+            track.style.transform = `translateX(${newTransform}px)`;
+            
+            console.log(`Centering card ${index}: offset=${offset}, transform=${newTransform}px`);
+        });
+    }
+    
+    // Navigation
+    prevBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+        goToSlide(currentIndex);
+    });
+    
+    nextBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % totalCards;
+        goToSlide(currentIndex);
+    });
+    
+    // Mouse wheel support
+    let isScrolling = false;
+    track.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (!isScrolling) {
+            isScrolling = true;
+            if (e.deltaY > 0) {
+                currentIndex = (currentIndex + 1) % totalCards;
+            } else {
+                currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+            }
+            goToSlide(currentIndex);
+            setTimeout(() => { isScrolling = false; }, 300);
         }
-        to {
-            transform: translateX(0);
-            opacity: 1;
+    });
+    
+    // Touch support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    track.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    track.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        if (touchEndX < touchStartX - 50) {
+            currentIndex = (currentIndex + 1) % totalCards;
+            goToSlide(currentIndex);
+        }
+        if (touchEndX > touchStartX + 50) {
+            currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+            goToSlide(currentIndex);
         }
     }
     
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
+    // Click to navigate to post
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            if (card.classList.contains('active')) {
+                // For now just alert since we don't have real posts
+                console.log('Navigate to:', card.querySelector('h2').textContent);
+            }
+        });
+    });
     
-    .copy-code-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        padding: 5px 10px;
-        background: rgba(255, 255, 255, 0.9);
-        color: #333;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
+    // Initialize
+    goToSlide(0);
     
-    .copy-code-btn:hover {
-        background: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-`;
-
-document.head.appendChild(style);
+    // Handle resize
+    window.addEventListener('resize', () => {
+        goToSlide(currentIndex);
+    });
+});
