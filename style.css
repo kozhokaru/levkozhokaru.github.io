@@ -35,6 +35,8 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
 }
 
 #hero img {
@@ -192,15 +194,24 @@ body {
     100% { transform: rotate(0deg) scale(1); opacity: 1; }
 }
 
-/* Smooth scrolling */
+/* Smooth scrolling with snap points */
 html {
     scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+}
+
+body {
+    height: 100%;
 }
 
 /* Sections */
 #blog, #about {
     min-height: 100vh;
     padding: 100px 40px 40px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
 }
 
 .container {
@@ -229,6 +240,11 @@ html {
     margin: 0 auto;
     padding: 60px 0;
     overflow: hidden;
+}
+
+/* Prevent page scroll when hovering carousel */
+.carousel-container.scrolling {
+    touch-action: pan-x;
 }
 
 /* Track */

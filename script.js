@@ -133,21 +133,62 @@ document.addEventListener('DOMContentLoaded', () => {
         goToSlide(currentIndex);
     });
     
-    // Mouse wheel support
-    let isScrolling = false;
-    track.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        if (!isScrolling) {
-            isScrolling = true;
-            if (e.deltaY > 0) {
-                currentIndex = (currentIndex + 1) % totalCards;
-            } else {
-                currentIndex = (currentIndex - 1 + totalCards) % totalCards;
-            }
-            goToSlide(currentIndex);
-            setTimeout(() => { isScrolling = false; }, 300);
-        }
+    // Carousel scroll isolation
+    const carouselContainer = document.querySelector('.carousel-container');
+    let isCarouselHovered = false;
+    let isCarouselScrolling = false;
+    
+    // Track carousel hover state
+    carouselContainer.addEventListener('mouseenter', () => {
+        isCarouselHovered = true;
+        carouselContainer.classList.add('scrolling');
     });
+    
+    carouselContainer.addEventListener('mouseleave', () => {
+        isCarouselHovered = false;
+        carouselContainer.classList.remove('scrolling');
+    });
+    
+    // Handle wheel events on carousel
+    carouselContainer.addEventListener('wheel', (e) => {
+        if (isCarouselHovered) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (!isCarouselScrolling) {
+                isCarouselScrolling = true;
+                
+                // Check if horizontal scroll (shift key or horizontal delta)
+                const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey;
+                
+                if (isHorizontal || Math.abs(e.deltaX) > 0) {
+                    // Horizontal scroll - navigate carousel
+                    if (e.deltaX > 0 || (e.shiftKey && e.deltaY > 0)) {
+                        currentIndex = (currentIndex + 1) % totalCards;
+                    } else if (e.deltaX < 0 || (e.shiftKey && e.deltaY < 0)) {
+                        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+                    }
+                } else {
+                    // Vertical scroll - also navigate carousel when hovering
+                    if (e.deltaY > 0) {
+                        currentIndex = (currentIndex + 1) % totalCards;
+                    } else {
+                        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+                    }
+                }
+                
+                goToSlide(currentIndex);
+                setTimeout(() => { isCarouselScrolling = false; }, 300);
+            }
+        }
+    }, { passive: false });
+    
+    // Prevent page scroll when hovering carousel
+    document.addEventListener('wheel', (e) => {
+        if (isCarouselHovered) {
+            e.preventDefault();
+        }
+    }, { passive: false });
     
     // Touch support
     let touchStartX = 0;
