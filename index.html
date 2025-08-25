@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lev Kozhokaru</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <section id="hero">
+        <img src="kozhokaru_hero.png" alt="Lev Kozhokaru">
+        <div class="scroll-indicator" onclick="scrollToContent()">
+            <span>scroll me</span>
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+        </div>
+    </section>
+
+    <nav id="navbar" class="hidden">
+        <div class="nav-left">Welcome to Lev Kozhokaru's blog</div>
+        <div class="nav-right">
+            <a href="#about">About</a>
+            <a href="#blog">Blog</a>
+            <button id="theme-toggle" aria-label="Toggle dark mode">
+                <div class="icon-wrapper">
+                    <svg class="sun-icon" viewBox="0 0 24 24" width="24" height="24">
+                        <g>
+                            <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                            <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </g>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+                    </svg>
+                </div>
+            </button>
+        </div>
+    </nav>
+
+    <section id="about">
+        <div class="container">
+            <h1>About</h1>
+            <p>Building software that matters. Focused on simplicity, performance, and clean architecture.</p>
+            <p>I believe in writing code that's not just functional, but beautiful. Every line should have purpose, every system should be maintainable, and every solution should be as simple as possible—but no simpler.</p>
+            <div class="social-links">
+                <a href="https://github.com/kozhokaru" class="social-link" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://www.linkedin.com/in/levkoz/" class="social-link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="blog">
+        <div class="container">
+            <h1>Blog</h1>
+            <div class="carousel-container">
+                <div class="carousel-track">
+                    <article class="carousel-card" data-url="#">
+                        <div class="card-content">
+                            <time>Jan 23, 2025</time>
+                            <h2>The Art of Writing Clean Code</h2>
+                            <p>Clean code is not just about making it work. It's about making it obvious, maintainable, and elegant.</p>
+                            <span class="read-more">Read →</span>
+                        </div>
+                    </article>
+                    <article class="carousel-card" data-url="#">
+                        <div class="card-content">
+                            <time>Jan 22, 2025</time>
+                            <h2>Debugging Production Issues Like a Detective</h2>
+                            <p>When production breaks at 3 AM, you need more than just logs. You need a systematic approach.</p>
+                            <span class="read-more">Read →</span>
+                        </div>
+                    </article>
+                    <article class="carousel-card" data-url="#">
+                        <div class="card-content">
+                            <time>Jan 21, 2025</time>
+                            <h2>Why Performance Still Matters in 2025</h2>
+                            <p>Hardware is faster than ever, but users expect instant responses. Every millisecond counts.</p>
+                            <span class="read-more">Read →</span>
+                        </div>
+                    </article>
+                    <article class="carousel-card" data-url="#">
+                        <div class="card-content">
+                            <time>Jan 20, 2025</time>
+                            <h2>Simplicity Scales, Complexity Fails</h2>
+                            <p>The best systems are boringly simple. They do one thing well and compose beautifully with others.</p>
+                            <span class="read-more">Read →</span>
+                        </div>
+                    </article>
+                    <article class="carousel-card" data-url="#">
+                        <div class="card-content">
+                            <time>Jan 19, 2025</time>
+                            <h2>Code Reviews Are Not About Finding Bugs</h2>
+                            <p>The best code reviews teach, share context, and build team consensus. Finding bugs is just a side effect.</p>
+                            <span class="read-more">Read →</span>
+                        </div>
+                    </article>
+                </div>
+                <button class="carousel-btn prev" aria-label="Previous post">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button class="carousel-btn next" aria-label="Next post">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div class="carousel-dots"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for blog posts -->
+    <div id="post-modal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close modal">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <div class="modal-body">
+                <!-- Post content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

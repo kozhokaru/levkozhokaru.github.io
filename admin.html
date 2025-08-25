@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Admin - Create New Post</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <h1>Blog Post Creator</h1>
+            <div class="header-actions">
+                <button id="saveDraft" class="btn-secondary">Save Draft</button>
+                <button id="loadDraft" class="btn-secondary">Load Draft</button>
+                <button id="clearAll" class="btn-secondary">Clear All</button>
+            </div>
+        </header>
+
+        <div class="admin-main">
+            <!-- Editor Panel -->
+            <div class="editor-panel">
+                <h2>Post Editor</h2>
+                
+                <!-- Post Metadata -->
+                <div class="metadata-section">
+                    <h3>Post Information</h3>
+                    <div class="form-group">
+                        <label for="postTitle">Title *</label>
+                        <input type="text" id="postTitle" placeholder="Enter post title" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postCategory">Category *</label>
+                            <select id="postCategory">
+                                <option value="">Select category</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Design">Design</option>
+                                <option value="Performance">Performance</option>
+                                <option value="Announcements">Announcements</option>
+                                <option value="Tutorial">Tutorial</option>
+                                <option value="Research">Research</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="postDate">Date *</label>
+                            <input type="date" id="postDate" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="heroColor">Hero Color</label>
+                            <select id="heroColor">
+                                <option value="orange">Orange (Default)</option>
+                                <option value="blue">Blue</option>
+                                <option value="green">Green</option>
+                                <option value="purple">Purple</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="heroEmoji">Hero Emoji</label>
+                            <input type="text" id="heroEmoji" placeholder="🚀" maxlength="2">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postExcerpt">Excerpt (for index page)</label>
+                        <textarea id="postExcerpt" placeholder="Brief description of the post" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Content Blocks -->
+                <div class="content-section">
+                    <h3>Content Blocks</h3>
+                    <div id="contentBlocks" class="content-blocks">
+                        <!-- Dynamic content blocks will be added here -->
+                    </div>
+                    
+                    <button id="addBlock" class="btn-add-block">
+                        <span class="add-icon">+</span> Add Content Block
+                    </button>
+                </div>
+
+                <!-- References Section -->
+                <div class="references-section">
+                    <h3>References (Optional)</h3>
+                    <div id="references" class="references-list">
+                        <!-- Dynamic references will be added here -->
+                    </div>
+                    <button id="addReference" class="btn-secondary">Add Reference</button>
+                </div>
+
+                <!-- Generate Button -->
+                <div class="generate-section">
+                    <button id="generatePost" class="btn-primary">Generate Post</button>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="preview-panel">
+                <h2>Live Preview</h2>
+                <div class="preview-controls">
+                    <button id="refreshPreview" class="btn-small">Refresh</button>
+                    <span class="read-time">Reading time: <span id="readingTime">0 min</span></span>
+                </div>
+                <div id="previewContent" class="preview-content">
+                    <div class="preview-empty">
+                        Start adding content to see the preview
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Panel (Initially Hidden) -->
+        <div id="outputPanel" class="output-panel" style="display: none;">
+            <h2>Generated Output</h2>
+            
+            <div class="output-section">
+                <h3>Step 1: Post HTML File</h3>
+                <p class="output-instruction">Copy this code and save it as a new HTML file in the <code>posts/</code> directory:</p>
+                <div class="output-filename">
+                    Suggested filename: <code id="suggestedFilename">post.html</code>
+                </div>
+                <div class="code-output">
+                    <textarea id="postHtmlOutput" readonly></textarea>
+                    <button class="btn-copy" data-target="postHtmlOutput">Copy HTML</button>
+                </div>
+                <button id="downloadPost" class="btn-primary">Download Post File</button>
+            </div>
+            
+            <div class="output-section">
+                <h3>Step 2: Update Index Page</h3>
+                <p class="output-instruction">Add this card to your <code>index.html</code> file in the posts grid:</p>
+                <div class="code-output">
+                    <textarea id="indexHtmlOutput" readonly></textarea>
+                    <button class="btn-copy" data-target="indexHtmlOutput">Copy Card HTML</button>
+                </div>
+            </div>
+            
+            <button id="closeOutput" class="btn-secondary">Close Output</button>
+        </div>
+    </div>
+
+    <!-- Content Block Template -->
+    <template id="blockTemplate">
+        <div class="content-block" data-block-id="">
+            <div class="block-header">
+                <select class="block-type">
+                    <option value="paragraph">Paragraph</option>
+                    <option value="heading">Heading</option>
+                    <option value="image">Image</option>
+                    <option value="video">YouTube Video</option>
+                    <option value="code">Code Block</option>
+                    <option value="quote">Quote</option>
+                    <option value="list">List</option>
+                </select>
+                <div class="block-actions">
+                    <button class="btn-move-up" title="Move up">↑</button>
+                    <button class="btn-move-down" title="Move down">↓</button>
+                    <button class="btn-delete" title="Delete">×</button>
+                </div>
+            </div>
+            <div class="block-content">
+                <!-- Content will be dynamically inserted based on type -->
+            </div>
+        </div>
+    </template>
+
+    <!-- Reference Template -->
+    <template id="referenceTemplate">
+        <div class="reference-item">
+            <input type="text" class="ref-title" placeholder="Reference title">
+            <input type="url" class="ref-url" placeholder="URL">
+            <button class="btn-delete-ref">×</button>
+        </div>
+    </template>
+
+    <!-- Progress Modal -->
+    <div id="progressModal" class="progress-modal" style="display: none;">
+        <div class="progress-modal-content">
+            <h3>Generating Your Post...</h3>
+            
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <div class="progress-percentage">
+                <span id="progressPercent">0</span>%
+            </div>
+            
+            <div class="progress-steps">
+                <div class="progress-step" data-step="validate">
+                    <span class="step-icon">○</span>
+                    <span class="step-text">Validating inputs</span>
+                </div>
+                <div class="progress-step" data-step="process">
+                    <span class="step-icon">○</span>
+                    <span class="step-text">Processing content blocks</span>
+                </div>
+                <div class="progress-step" data-step="html">
+                    <span class="step-icon">○</span>
+                    <span class="step-text">Generating HTML</span>
+                </div>
+                <div class="progress-step" data-step="index">
+                    <span class="step-icon">○</span>
+                    <span class="step-text">Creating index snippet</span>
+                </div>
+                <div class="progress-step" data-step="prepare">
+                    <span class="step-icon">○</span>
+                    <span class="step-text">Preparing download</span>
+                </div>
+            </div>
+            
+            <div class="progress-message" id="progressMessage"></div>
+            
+            <div class="progress-error" id="progressError" style="display: none;">
+                <p class="error-message"></p>
+                <button class="btn-secondary" onclick="closeProgressModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
