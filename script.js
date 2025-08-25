@@ -1,6 +1,6 @@
 // Smooth scroll
 function scrollToContent() {
-    document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
 }
 
 // Navbar reveal on scroll
@@ -402,15 +402,29 @@ function closeModal() {
     modal.classList.remove('open');
     document.body.classList.remove('modal-open');
     
+    // Temporarily disable smooth scrolling to prevent animation
+    const htmlElement = document.documentElement;
+    const originalScrollBehavior = htmlElement.style.scrollBehavior;
+    htmlElement.style.scrollBehavior = 'auto';
+    
     // Restore body scroll
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.width = '';
     
-    // Restore scroll position
+    // Restore scroll position instantly
     if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        window.scrollTo({
+            top: parseInt(scrollY || '0') * -1,
+            left: 0,
+            behavior: 'instant'
+        });
     }
+    
+    // Restore smooth scrolling after a brief delay
+    setTimeout(() => {
+        htmlElement.style.scrollBehavior = originalScrollBehavior || '';
+    }, 10);
 }
 
 // Event listeners for closing modal
