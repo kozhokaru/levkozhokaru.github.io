@@ -48,7 +48,7 @@ body {
 /* Scroll indicator */
 .scroll-indicator {
     position: absolute;
-    bottom: 40px;
+    bottom: 20px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -64,7 +64,7 @@ body {
 
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-8px); }
 }
 
 /* Navbar */
